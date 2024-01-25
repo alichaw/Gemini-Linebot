@@ -18,10 +18,12 @@ from linebot.v3.webhooks import (
     TextMessageContent
 )
 
+import os
+
 app = Flask(__name__)
 
-configuration = Configuration(access_token='9yru8c5MZs7qC8rNA0LbfXPWvWjbwPaD9OKAggK/nrHIHkJ4bRy4rC+L6ClqN9Jcbdt2wscu1mlhyWbxTy8v19UvvkiON38wyrL9lsGVonXmFJXXIuDyQbq53eV0b2y/w45EiR7PbJX9QsNNw/ascgdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('d9a8a0024fd010f5367d0d5ee5e23e98')
+configuration = Configuration(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['LINE_CHANNEL_SECRET'])
 
 
 @app.route("/callback", methods=['POST'])
@@ -50,9 +52,10 @@ def handle_message(event):
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text="Hi")]
+                messages=[TextMessage(text=event.message.text)]
             )
         )
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
